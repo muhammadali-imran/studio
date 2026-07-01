@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useMutation } from '../../hooks/useMutation'
-import { useToast } from '../../components/NotificationContext'
+import { useMutation } from '@shared/hooks/useMutation'
+import { useToast } from '@/components/NotificationContext'
 import CourseForm from '../../components/CourseForm'
 import ActionBar from '../../components/ActionBar'
 

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 export default function AuthLayout({ children }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e1040] via-[#2d1b6b] to-[#1e1040] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-[#1e1040] via-[#2d1b6b] to-[#1e1040] flex flex-col items-center justify-center p-4">
       <Link to="/" className="flex items-center gap-3 mb-8 text-white">
         <span className="text-3xl">🎓</span>
         <div>

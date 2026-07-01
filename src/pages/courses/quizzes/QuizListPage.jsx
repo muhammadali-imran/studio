@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { useApi } from '../../../hooks/useApi'
-import { useMutation } from '../../../hooks/useMutation'
-import { useToast } from '../../../components/NotificationContext'
+import { useApi } from '@shared/hooks/useApi'
+import { useMutation } from '@shared/hooks/useMutation'
+import { useToast } from '@/components/NotificationContext'
 import CourseTabs from '../../../components/CourseTabs'
-import Badge from '../../../components/Badge'
+import Badge from '@shared/components/ui/Badge'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import EmptyState from '../../../components/EmptyState'
 import ErrorState from '../../../components/ErrorState'
-import Skeleton from '../../../components/Skeleton'
+import Skeleton from '@shared/components/ui/Skeleton'
 
 const mockQuizzes = [
   { id: 1, title: 'Week 1 — Python Basics', questions: 10, time_limit: 20, passing_score: 60, published: true, attempts: 42 },

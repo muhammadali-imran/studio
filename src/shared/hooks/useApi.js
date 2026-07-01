@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import api from '../api/axios'
+import api from '@shared/api/axios'
 
 const MOCKS_ENABLED = import.meta.env.DEV && import.meta.env.VITE_USE_MOCKS === 'true'
 

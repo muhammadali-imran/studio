@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import api from '../api/axios'
+import api from '@shared/api/axios'
 
 export function useMutation(url, method = 'post') {
   const [loading, setLoading] = useState(false)

@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { useApi } from '../../../hooks/useApi'
-import { useMutation } from '../../../hooks/useMutation'
-import { useToast } from '../../../components/NotificationContext'
+import { useApi } from '@shared/hooks/useApi'
+import { useMutation } from '@shared/hooks/useMutation'
+import { useToast } from '@/components/NotificationContext'
 import CourseTabs from '../../../components/CourseTabs'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import EmptyState from '../../../components/EmptyState'
 import ErrorState from '../../../components/ErrorState'
-import Skeleton from '../../../components/Skeleton'
+import Skeleton from '@shared/components/ui/Skeleton'
 
 const mockSessions = [
   { id: 1, date: '2025-01-15', topic: 'Python Setup & Introduction', present: 45, absent: 3, total: 48 },

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import useAuth from '../../hooks/useAuth'
-import useTheme from '../../hooks/useTheme'
-import { useApi } from '../../hooks/useApi'
-import { useMutation } from '../../hooks/useMutation'
-import { useToast } from '../../components/NotificationContext'
-import Card, { CardTitle } from '../../components/Card'
+import useAuth from '@/hooks/useAuth'
+import useTheme from '@/hooks/useTheme'
+import { useApi } from '@shared/hooks/useApi'
+import { useMutation } from '@shared/hooks/useMutation'
+import { useToast } from '@/components/NotificationContext'
+import Card, { CardTitle } from '@shared/components/ui/Card'
 import Avatar from '../../components/Avatar'
-import Skeleton from '../../components/Skeleton'
+import Skeleton from '@shared/components/ui/Skeleton'
 
 const NOTIFICATION_KEYS = [
   { key: 'notify_new_submission', label: 'New submission received', desc: 'Get notified when a student submits an assignment' },

@@ -1,9 +1,9 @@
 import { Outlet } from 'react-router-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import useSidebar from '../hooks/useSidebar'
-import useAuth from '../hooks/useAuth'
-import Avatar from '../components/Avatar'
+import useSidebar from '@/hooks/useSidebar'
+import useAuth from '@/hooks/useAuth'
+import Avatar from '@/components/Avatar'
 
 const navItems = [
   { to: '/dashboard',      label: 'Dashboard',      icon: '🏠' },
@@ -121,7 +121,7 @@ function TopBar() {
           aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}
           aria-expanded={open}
           aria-controls="studio-sidebar"
-          className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 rounded-lg"
+          className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 rounded-lg"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {open

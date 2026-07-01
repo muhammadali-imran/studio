@@ -1,4 +1,4 @@
-import Modal, { ModalFooter } from './Modal'
+import Modal, { ModalFooter } from '@shared/components/ui/Modal'
 
 export default function ConfirmDialog({ open, onClose, onConfirm, title = 'Are you sure?', message = 'This action cannot be undone.', confirmLabel = 'Delete', loading = false, variant = 'danger' }) {
   return (

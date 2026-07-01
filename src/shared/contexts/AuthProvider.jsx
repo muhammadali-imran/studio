@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import api, { TOKEN_KEY, REFRESH_KEY } from '../api/axios'
+import api, { TOKEN_KEY, REFRESH_KEY } from '@shared/api/axios'
 import AuthContext from './AuthContext'
 
 export default function AuthProvider({ children }) {

@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useEffect } from 'react'
-import Card from './Card'
+import Card from '@shared/components/ui/Card'
 import FormField, { inputClass } from './FormField'
 
 export const courseSchema = z.object({

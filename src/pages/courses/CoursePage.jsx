@@ -1,9 +1,9 @@
 import { useParams, Link } from 'react-router-dom'
-import { useApi } from '../../hooks/useApi'
+import { useApi } from '@shared/hooks/useApi'
 import CourseTabs from '../../components/CourseTabs'
-import Card, { CardTitle } from '../../components/Card'
-import Badge from '../../components/Badge'
-import Loading from '../../components/Loading'
+import Card, { CardTitle } from '@shared/components/ui/Card'
+import Badge from '@shared/components/ui/Badge'
+import Loading from '@shared/components/ui/Loading'
 import ErrorState from '../../components/ErrorState'
 
 const mockCourse = {

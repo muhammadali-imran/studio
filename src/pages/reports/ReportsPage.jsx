@@ -1,11 +1,11 @@
-import { useApi } from '../../hooks/useApi'
-import { useToast } from '../../components/NotificationContext'
-import Card, { CardTitle } from '../../components/Card'
+import { useApi } from '@shared/hooks/useApi'
+import { useToast } from '@/components/NotificationContext'
+import Card, { CardTitle } from '@shared/components/ui/Card'
 import StatCard from '../../components/StatCard'
-import Skeleton from '../../components/Skeleton'
+import Skeleton from '@shared/components/ui/Skeleton'
 import ErrorState from '../../components/ErrorState'
 import { BarChartWidget, LineChartWidget, PieChartWidget } from '../../components/ChartWidget'
-import Badge from '../../components/Badge'
+import Badge from '@shared/components/ui/Badge'
 
 const mockReports = {
   stats: [

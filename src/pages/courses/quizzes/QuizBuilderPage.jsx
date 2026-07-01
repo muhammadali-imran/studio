@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { useApi } from '../../../hooks/useApi'
-import { useMutation } from '../../../hooks/useMutation'
-import { useToast } from '../../../components/NotificationContext'
+import { useApi } from '@shared/hooks/useApi'
+import { useMutation } from '@shared/hooks/useMutation'
+import { useToast } from '@/components/NotificationContext'
 import QuestionBuilder from '../../../components/QuestionBuilder'
-import Card, { CardTitle } from '../../../components/Card'
+import Card, { CardTitle } from '@shared/components/ui/Card'
 import ActionBar from '../../../components/ActionBar'
 
 export default function QuizBuilderPage() {

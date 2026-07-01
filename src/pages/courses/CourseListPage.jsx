@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useApi } from '../../hooks/useApi'
-import { useDebounce } from '../../hooks/useDebounce'
-import { usePagination } from '../../hooks/usePagination'
+import { useApi } from '@shared/hooks/useApi'
+import { useDebounce } from '@shared/hooks/useDebounce'
+import { usePagination } from '@shared/hooks/usePagination'
 import SearchInput from '../../components/SearchInput'
-import DataTable from '../../components/DataTable'
-import Badge from '../../components/Badge'
+import DataTable from '@shared/components/ui/DataTable'
+import Badge from '@shared/components/ui/Badge'
 import ErrorState from '../../components/ErrorState'
 
 const mockCourses = {

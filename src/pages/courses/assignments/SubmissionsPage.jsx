@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
-import { useApi } from '../../../hooks/useApi'
-import Badge from '../../../components/Badge'
-import DataTable from '../../../components/DataTable'
+import { useApi } from '@shared/hooks/useApi'
+import Badge from '@shared/components/ui/Badge'
+import DataTable from '@shared/components/ui/DataTable'
 import ErrorState from '../../../components/ErrorState'
 
 const mockSubmissions = [

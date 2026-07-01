@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import api from '../api/axios'
+import api from '@shared/api/axios'
 
 /**
  * useFileUpload — performs an actual multipart/form-data upload with
