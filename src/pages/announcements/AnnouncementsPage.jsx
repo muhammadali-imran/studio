@@ -73,7 +73,7 @@ export default function AnnouncementsPage() {
                   <p className="text-sm text-slate-600 mt-2 leading-relaxed">{a.body}</p>
                   <p className="text-xs text-slate-400 mt-3">{a.created_at}</p>
                 </div>
-                <button onClick={() => setDeleteTarget(a.id)} className="text-slate-300 hover:text-red-400 text-lg leading-none flex-shrink-0 transition-colors">✕</button>
+                <button onClick={() => setDeleteTarget(a.id)} className="text-slate-300 hover:text-red-400 text-lg leading-none shrink-0 transition-colors">✕</button>
               </div>
             </div>
           ))}

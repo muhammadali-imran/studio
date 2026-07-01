@@ -4,8 +4,216 @@
 
 :root {
   color-scheme: light;
+  font-family: 'Cantarell', sans-serif;
+}
+
+/* GSAP Compatibility: No CSS transitions on animated elements */
+.gsap-animate,
+.gsap-stagger,
+.gsap-fade,
+.gsap-slide-up,
+.gsap-scale-in,
+.hero-blob,
+.feature-card,
+.testimonial-card,
+.tab-content-panel,
+.cta-element,
+.nav-item,
+.ticker-track,
+.benefit-tab-btn {
+  transition: none !important;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: 'Cantarell', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+  color: #1A2B49;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(79, 146, 255, 0.2);
+  color: #1A2B49;
+}
+
+/* Blob gradients */
+.blob-sky {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(79, 146, 255, 0.45) 0%, rgba(112, 193, 255, 0.2) 35%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob-gold {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 60% 60%, rgba(243, 176, 0, 0.4) 0%, rgba(255, 199, 44, 0.18) 35%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob-teal {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(92, 184, 178, 0.35) 0%, rgba(120, 210, 200, 0.12) 40%, transparent 72%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Feature card glow */
+.feature-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid #e8ecf1;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(79, 146, 255, 0.07) 0%, transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.25s ease;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+/* Testimonial card */
+.testimonial-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  border: 1px solid #e8ecf1;
+  position: relative;
+  will-change: transform;
+}
+
+.testimonial-card::after {
+  content: '"';
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(79, 146, 255, 0.1);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Benefit tab buttons */
+.benefit-tab-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: #F4F7FA;
+  color: #5a6c7d;
+  position: relative;
+  z-index: 1;
+  outline: none;
+  white-space: nowrap;
+  font-family: 'Cantarell', sans-serif;
+  transition: none !important;
+}
+
+.benefit-tab-btn.active {
+  background: #1A2B49;
+  color: #ffffff;
+  border-color: #1A2B49;
+  box-shadow: 0 4px 20px rgba(26, 43, 73, 0.25);
+}
+
+.benefit-tab-btn:focus-visible {
+  outline: 3px solid #4F92FF;
+  outline-offset: 3px;
+}
+
+/* Ticker wrapper */
+.ticker-wrapper {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.ticker-track {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Email input */
+.email-input {
+  border: 2px solid #dce3ea;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  font-size: 1rem;
+  width: 100%;
+  background: #ffffff;
+  color: #1A2B49;
+  outline: none;
+  font-family: 'Cantarell', sans-serif;
+}
+
+.email-input:focus {
+  border-color: #4F92FF;
+  box-shadow: 0 0 0 4px rgba(79, 146, 255, 0.1);
+}
+
+/* Focus a11y */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #4F92FF;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F7FA;
+}
+::-webkit-scrollbar-thumb {
+  background: #c4cdd6;
+  border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+  .blob-sky,
+  .blob-gold,
+  .blob-teal {
+    filter: blur(50px);
+  }
+  .benefit-tab-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
 }

@@ -54,79 +54,99 @@ function Guard({ roles, children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <SidebarProvider>
-            <ToastProvider>
-              <PageSuspense>
-                <Routes>
-                  {/* ── Public ── */}
-                  <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(79,146,255,0.16),_transparent_28%),linear-gradient(135deg,_#f8fbff_0%,_#ffffff_100%)] text-slate-900">
+      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
+        <header className="mb-4 flex items-center justify-between rounded-3xl border border-sky-100/70 bg-white/75 px-4 py-3 shadow-[0_10px_40px_rgba(26,43,73,0.06)] backdrop-blur">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-sky-600">Learning platform</p>
+            <h1 className="text-lg font-semibold text-navy">Studio workspace</h1>
+          </div>
+          <div className="rounded-full bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700">Live authoring</div>
+        </header>
 
-                {/* Protected — instructor or admin */}
-                <Route element={<StudioLayout />/*<Protected roles={['instructor', 'admin']}><StudioLayout /></Protected>*/}>
-                  <Route path="/dashboard" element={<Dashboard />} />
+        {/* decorative blobs matching learner landing */}
+        <div className="blob-sky" style={{ width: 420, height: 420, top: 40, left: -120 }} />
+        <div className="blob-gold" style={{ width: 320, height: 320, right: -80, top: 160 }} />
 
-                    {/* Courses */}
-                    <Route path="/courses"              element={<CourseListPage />} />
-                    <Route path="/courses/new"          element={<CreateCoursePage />} />
-                    <Route path="/courses/:id"          element={<CoursePage />} />
-                    <Route path="/courses/:id/edit"     element={<EditCoursePage />} />
-                    <Route path="/courses/:id/students" element={<CourseStudentsPage />} />
+        <div className="flex-1 rounded-4xl border border-slate-200/70 bg-white/80 p-2 shadow-[0_24px_80px_rgba(26,43,73,0.08)] backdrop-blur">
+          <div className="min-h-full rounded-3xl bg-slate-50/80 p-2">
+            <BrowserRouter>
+              <ThemeProvider>
+                <AuthProvider>
+                  <SidebarProvider>
+                    <ToastProvider>
+                      <PageSuspense>
+                        <Routes>
+                          {/* ── Public ── */}
+                          <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
+                          <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-                    {/* Lectures */}
-                    <Route path="/courses/:id/lectures"                 element={<LectureListPage />} />
-                    <Route path="/courses/:id/lectures/new"             element={<LectureEditorPage />} />
-                    <Route path="/courses/:id/lectures/:lid/edit"       element={<LectureEditorPage />} />
+                        {/* Protected — instructor or admin */}
+                        <Route element={<StudioLayout />/*<Protected roles={['instructor', 'admin']}><StudioLayout /></Protected>*/}>
+                          <Route path="/dashboard" element={<Dashboard />} />
 
-                    {/* Quizzes */}
-                    <Route path="/courses/:id/quizzes"                  element={<QuizListPage />} />
-                    <Route path="/courses/:id/quizzes/new"              element={<QuizBuilderPage />} />
-                    <Route path="/courses/:id/quizzes/:qid/edit"        element={<QuizBuilderPage />} />
-                    <Route path="/courses/:id/quizzes/:qid/results"     element={<QuizResultsPage />} />
+                            {/* Courses */}
+                            <Route path="/courses"              element={<CourseListPage />} />
+                            <Route path="/courses/new"          element={<CreateCoursePage />} />
+                            <Route path="/courses/:id"          element={<CoursePage />} />
+                            <Route path="/courses/:id/edit"     element={<EditCoursePage />} />
+                            <Route path="/courses/:id/students" element={<CourseStudentsPage />} />
 
-                    {/* Assignments */}
-                    <Route path="/courses/:id/assignments"                              element={<AssignmentListPage />} />
-                    <Route path="/courses/:id/assignments/new"                          element={<AssignmentEditorPage />} />
-                    <Route path="/courses/:id/assignments/:aid/edit"                    element={<AssignmentEditorPage />} />
-                    <Route path="/courses/:id/assignments/:aid/submissions"             element={<SubmissionsPage />} />
-                    <Route path="/courses/:id/assignments/:aid/submissions/:sid"        element={<SubmissionDetailPage />} />
+                            {/* Lectures */}
+                            <Route path="/courses/:id/lectures"                 element={<LectureListPage />} />
+                            <Route path="/courses/:id/lectures/new"             element={<LectureEditorPage />} />
+                            <Route path="/courses/:id/lectures/:lid/edit"       element={<LectureEditorPage />} />
 
-                    {/* Attendance */}
-                    <Route path="/courses/:id/attendance"               element={<AttendanceListPage />} />
-                    <Route path="/courses/:id/attendance/new"           element={<AttendanceSessionPage />} />
-                    <Route path="/courses/:id/attendance/:sid"          element={<AttendanceSessionPage />} />
+                            {/* Quizzes */}
+                            <Route path="/courses/:id/quizzes"                  element={<QuizListPage />} />
+                            <Route path="/courses/:id/quizzes/new"              element={<QuizBuilderPage />} />
+                            <Route path="/courses/:id/quizzes/:qid/edit"        element={<QuizBuilderPage />} />
+                            <Route path="/courses/:id/quizzes/:qid/results"     element={<QuizResultsPage />} />
 
-                    {/* Top-level instructor routes */}
-                    <Route path="/students"       element={<AllStudentsPage />} />
-                    <Route path="/library"        element={<LibraryPage />} />
-                    <Route path="/announcements"  element={<AnnouncementsPage />} />
-                    <Route path="/reports"        element={<ReportsPage />} />
-                    <Route path="/settings"       element={<SettingsPage />} />
+                            {/* Assignments */}
+                            <Route path="/courses/:id/assignments"                              element={<AssignmentListPage />} />
+                            <Route path="/courses/:id/assignments/new"                          element={<AssignmentEditorPage />} />
+                            <Route path="/courses/:id/assignments/:aid/edit"                    element={<AssignmentEditorPage />} />
+                            <Route path="/courses/:id/assignments/:aid/submissions"             element={<SubmissionsPage />} />
+                            <Route path="/courses/:id/assignments/:aid/submissions/:sid"        element={<SubmissionDetailPage />} />
 
-                    {/* Admin-only routes — second Guard is intentional: even
-                        if someone navigates here with an instructor token they
-                        will be redirected to /dashboard. */}
-                    <Route
-                      path="/users"
-                      element={<Guard roles={['admin']}><UserManagementPage /></Guard>}
-                    />
-                    <Route
-                      path="/fees"
-                      element={<Guard roles={['admin']}><FeesPage /></Guard>}
-                    />
-                  </Route>
+                            {/* Attendance */}
+                            <Route path="/courses/:id/attendance"               element={<AttendanceListPage />} />
+                            <Route path="/courses/:id/attendance/new"           element={<AttendanceSessionPage />} />
+                            <Route path="/courses/:id/attendance/:sid"          element={<AttendanceSessionPage />} />
 
-                  {/* Catch-all */}
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </PageSuspense>
-            </ToastProvider>
-          </SidebarProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+                            {/* Top-level instructor routes */}
+                            <Route path="/students"       element={<AllStudentsPage />} />
+                            <Route path="/library"        element={<LibraryPage />} />
+                            <Route path="/announcements"  element={<AnnouncementsPage />} />
+                            <Route path="/reports"        element={<ReportsPage />} />
+                            <Route path="/settings"       element={<SettingsPage />} />
+
+                            {/* Admin-only routes — second Guard is intentional: even
+                                if someone navigates here with an instructor token they
+                                will be redirected to /dashboard. */}
+                            <Route
+                              path="/users"
+                              element={<Guard roles={['admin']}><UserManagementPage /></Guard>}
+                            />
+                            <Route
+                              path="/fees"
+                              element={<Guard roles={['admin']}><FeesPage /></Guard>}
+                            />
+                          </Route>
+
+                          {/* Catch-all */}
+                          <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                      </PageSuspense>
+                    </ToastProvider>
+                  </SidebarProvider>
+                </AuthProvider>
+              </ThemeProvider>
+            </BrowserRouter>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
