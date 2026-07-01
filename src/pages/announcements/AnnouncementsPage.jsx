@@ -5,6 +5,7 @@ import { useToast } from '../../components/NotificationContext'
 import Modal, { ModalFooter } from '../../components/Modal'
 import Badge from '../../components/Badge'
 import EmptyState from '../../components/EmptyState'
+import ErrorState from '../../components/ErrorState'
 import ConfirmDialog from '../../components/ConfirmDialog'
 
 const mockAnnouncements = [
@@ -15,10 +16,10 @@ const mockAnnouncements = [
 
 export default function AnnouncementsPage() {
   const toast = useToast()
-  const { data } = useApi('/studio/announcements/')
+  const { data: announcements, loading, error, refetch } = useApi('/studio/announcements/', { mockData: mockAnnouncements })
   const { mutate: create, loading: creating } = useMutation('/studio/announcements/', 'post')
   const { mutate: del } = useMutation(null, 'delete')
-  const announcements = data ?? mockAnnouncements
+  const list = announcements ?? []
 
   const [modal, setModal] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -32,11 +33,12 @@ export default function AnnouncementsPage() {
       toast.success('Announcement posted.')
       setModal(false)
       setForm({ title: '', body: '', course: '', pinned: false })
+      refetch()
     } catch { toast.error('Failed to post announcement.') }
   }
 
   const handleDelete = async () => {
-    try { await del(null, `/studio/announcements/${deleteTarget}/`); toast.success('Deleted.') }
+    try { await del(null, `/studio/announcements/${deleteTarget}/`); toast.success('Deleted.'); refetch() }
     catch { toast.error('Failed to delete.') }
     setDeleteTarget(null)
   }
@@ -53,11 +55,13 @@ export default function AnnouncementsPage() {
         </button>
       </div>
 
-      {announcements.length === 0 ? (
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : list.length === 0 && !loading ? (
         <EmptyState icon="📢" title="No announcements" message="Post an announcement to notify your students." action={{ label: 'Post announcement', onClick: () => setModal(true) }} />
       ) : (
         <div className="space-y-4">
-          {announcements.map((a) => (
+          {list.map((a) => (
             <div key={a.id} className={`bg-white rounded-2xl border shadow-sm p-6 ${a.pinned ? 'border-violet-200 bg-violet-50/30' : 'border-slate-100'}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">

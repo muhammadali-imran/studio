@@ -7,6 +7,8 @@ import CourseTabs from '../../../components/CourseTabs'
 import Badge from '../../../components/Badge'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import EmptyState from '../../../components/EmptyState'
+import ErrorState from '../../../components/ErrorState'
+import Skeleton from '../../../components/Skeleton'
 
 const mockAssignments = [
   { id: 1, title: 'Lab 1 — Hello World & Variables', due_date: '2025-02-10', max_grade: 20, submissions: 44, graded: 44, status: 'closed' },
@@ -20,13 +22,13 @@ export default function AssignmentListPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
-  const { data } = useApi(`/studio/courses/${id}/assignments/`)
+  const { data: assignments, loading, error, refetch } = useApi(`/studio/courses/${id}/assignments/`, { mockData: mockAssignments })
   const { mutate: del } = useMutation(null, 'delete')
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const assignments = data ?? mockAssignments
+  const list = assignments ?? []
 
   const handleDelete = async () => {
-    try { await del(null, `/studio/assignments/${deleteTarget}/`); toast.success('Assignment deleted.') }
+    try { await del(null, `/studio/assignments/${deleteTarget}/`); toast.success('Assignment deleted.'); refetch() }
     catch { toast.error('Failed to delete.') }
     setDeleteTarget(null)
   }
@@ -43,11 +45,15 @@ export default function AssignmentListPage() {
 
       <CourseTabs />
 
-      {assignments.length === 0 ? (
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : loading ? (
+        <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-2xl" />)}</div>
+      ) : list.length === 0 ? (
         <EmptyState icon="📝" title="No assignments yet" message="Create your first assignment." action={{ label: 'Create assignment', onClick: () => navigate(`/courses/${id}/assignments/new`) }} />
       ) : (
         <div className="space-y-3">
-          {assignments.map((a) => (
+          {list.map((a) => (
             <div key={a.id} className="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm flex items-center gap-4">
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-slate-800">{a.title}</p>

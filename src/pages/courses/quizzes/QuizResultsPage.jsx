@@ -3,6 +3,8 @@ import { useApi } from '../../../hooks/useApi'
 import Card, { CardTitle } from '../../../components/Card'
 import Badge from '../../../components/Badge'
 import DataTable from '../../../components/DataTable'
+import Loading from '../../../components/Loading'
+import ErrorState from '../../../components/ErrorState'
 import { BarChartWidget } from '../../../components/ChartWidget'
 
 const mockResults = {
@@ -21,8 +23,11 @@ const mockResults = {
 
 export default function QuizResultsPage() {
   const { id, qid } = useParams()
-  const { data } = useApi(`/studio/quizzes/${qid}/results/`)
-  const results = data || mockResults
+  const { data: results, loading, error, refetch } = useApi(`/studio/quizzes/${qid}/results/`, { mockData: mockResults })
+
+  if (loading) return <Loading fullscreen />
+  if (error) return <ErrorState message={error} onRetry={refetch} />
+  if (!results) return null
 
   const columns = [
     { field: 'student', header: 'Student', sortable: true },

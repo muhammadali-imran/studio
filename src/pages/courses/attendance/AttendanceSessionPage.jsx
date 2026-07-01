@@ -6,6 +6,8 @@ import { useToast } from '../../../components/NotificationContext'
 import AttendanceGrid from '../../../components/AttendanceGrid'
 import Card, { CardTitle } from '../../../components/Card'
 import ActionBar from '../../../components/ActionBar'
+import Loading from '../../../components/Loading'
+import ErrorState from '../../../components/ErrorState'
 
 const mockStudents = [
   { id: 1, name: 'Ahmed Khan', roll: 'CS-2021-001', email: 'ahmed@school.edu' },
@@ -24,25 +26,29 @@ export default function AttendanceSessionPage() {
   const toast = useToast()
   const isEdit = !!sid && sid !== 'new'
 
-  const { data: students } = useApi(`/studio/courses/${id}/students/`)
-  const { data: existingSession } = useApi(isEdit ? `/studio/sessions/${sid}/` : null)
+  const { data: students, loading: studentsLoading, error: studentsError, refetch: refetchStudents } =
+    useApi(`/studio/courses/${id}/students/`, { mockData: mockStudents })
+  const { data: existingSession, loading: sessionLoading, error: sessionError } =
+    useApi(isEdit ? `/studio/sessions/${sid}/` : null)
   const { mutate: save, loading: saving } = useMutation(
     isEdit ? `/studio/sessions/${sid}/mark/` : `/studio/courses/${id}/sessions/`,
-    isEdit ? 'post' : 'post'
+    'post'
   )
 
-  const studentList = students ?? mockStudents
+  const studentList = students ?? []
   const today = new Date().toISOString().split('T')[0]
 
   const [date, setDate] = useState(today)
   const [topic, setTopic] = useState('')
   const [attendance, setAttendance] = useState({})
 
-  // Initialise all students as present
+  // Initialise all students as present once the roster loads
   useEffect(() => {
+    if (studentList.length === 0) return
     const init = {}
     studentList.forEach((s) => { init[s.id] = true })
     setAttendance(init)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentList.length])
 
   useEffect(() => {
@@ -50,13 +56,16 @@ export default function AttendanceSessionPage() {
       setDate(existingSession.date)
       setTopic(existingSession.topic)
       const map = {}
-      existingSession.records?.forEach((r) => { map[r.student_id] = r.present })
+      // Backend contract (see PRD §6.5): records reference the student by `id`.
+      existingSession.records?.forEach((r) => { map[r.id] = r.present })
       setAttendance(map)
     }
   }, [existingSession])
 
   const handleSave = async () => {
     if (!topic.trim()) { toast.error('Session topic is required.'); return }
+    // PRD §6.5 contract: POST /studio/sessions/:sid/mark/
+    //   { students: [ { id: <student id>, present: <bool> }, ... ] }
     const records = studentList.map((s) => ({ id: s.id, present: !!attendance[s.id] }))
     try {
       await save({ date, topic, students: records })
@@ -64,6 +73,10 @@ export default function AttendanceSessionPage() {
       navigate(`/courses/${id}/attendance`)
     } catch { toast.error('Failed to save attendance.') }
   }
+
+  if (studentsLoading || sessionLoading) return <Loading fullscreen />
+  if (studentsError) return <ErrorState message={studentsError} onRetry={refetchStudents} />
+  if (sessionError) return <ErrorState message={sessionError} />
 
   return (
     <div className="space-y-6 pb-20">
@@ -90,7 +103,11 @@ export default function AttendanceSessionPage() {
 
       <div>
         <h3 className="text-base font-semibold text-slate-800 mb-3">Mark attendance</h3>
-        <AttendanceGrid students={studentList} attendance={attendance} onChange={setAttendance} />
+        {studentList.length === 0 ? (
+          <p className="text-sm text-slate-400 py-6 text-center">No students enrolled in this course yet.</p>
+        ) : (
+          <AttendanceGrid students={studentList} attendance={attendance} onChange={setAttendance} />
+        )}
       </div>
 
       <ActionBar onCancel={() => navigate(`/courses/${id}/attendance`)} onSave={handleSave} saving={saving} label="Save attendance" />

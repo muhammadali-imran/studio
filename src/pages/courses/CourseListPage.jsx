@@ -8,13 +8,17 @@ import DataTable from '../../components/DataTable'
 import Badge from '../../components/Badge'
 import ErrorState from '../../components/ErrorState'
 
-const mockCourses = [
-  { id: 1, title: 'Introduction to Python', instructor_name: 'Dr. Ahmed', status: 'active', students: 48, duration: '16 weeks' },
-  { id: 2, title: 'Web Development Fundamentals', instructor_name: 'Dr. Ahmed', status: 'active', students: 62, duration: '14 weeks' },
-  { id: 3, title: 'Data Structures & Algorithms', instructor_name: 'Dr. Ahmed', status: 'active', students: 39, duration: '18 weeks' },
-  { id: 4, title: 'Database Management', instructor_name: 'Dr. Ahmed', status: 'draft', students: 0, duration: '12 weeks' },
-  { id: 5, title: 'Machine Learning Basics', instructor_name: 'Dr. Ahmed', status: 'archived', students: 74, duration: '20 weeks' },
-]
+const mockCourses = {
+  results: [
+    { id: 1, title: 'Introduction to Python', instructor_name: 'Dr. Ahmed', status: 'active', students: 48, duration: '16 weeks' },
+    { id: 2, title: 'Web Development Fundamentals', instructor_name: 'Dr. Ahmed', status: 'active', students: 62, duration: '14 weeks' },
+    { id: 3, title: 'Data Structures & Algorithms', instructor_name: 'Dr. Ahmed', status: 'active', students: 39, duration: '18 weeks' },
+    { id: 4, title: 'Database Management', instructor_name: 'Dr. Ahmed', status: 'draft', students: 0, duration: '12 weeks' },
+    { id: 5, title: 'Machine Learning Basics', instructor_name: 'Dr. Ahmed', status: 'archived', students: 74, duration: '20 weeks' },
+  ],
+  count: 5,
+}
+
 const statusVariant = { active: 'green', draft: 'amber', archived: 'slate' }
 
 export default function CourseListPage() {
@@ -22,9 +26,10 @@ export default function CourseListPage() {
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
   const { page, pageSize, setPage, paginationParams } = usePagination()
-  const { data, loading, error } = useApi('/studio/courses/', { params: { ...paginationParams, search: debouncedSearch } })
-  const courses = data?.results ?? mockCourses
-  const total = data?.count ?? mockCourses.length
+  const { data, loading, error, refetch } = useApi('/studio/courses/', {
+    params: { ...paginationParams, search: debouncedSearch },
+    mockData: mockCourses,
+  })
 
   const columns = [
     { field: 'title', header: 'Course', sortable: true, render: (row) => (
@@ -56,8 +61,8 @@ export default function CourseListPage() {
       <div className="max-w-xs">
         <SearchInput value={search} onChange={setSearch} placeholder="Search courses..." />
       </div>
-      {error ? <ErrorState message={error} /> : (
-        <DataTable columns={columns} data={courses} loading={loading} onRowClick={(row) => navigate(`/courses/${row.id}`)} page={page} pageSize={pageSize} total={total} onPageChange={setPage} emptyMessage="No courses found" />
+      {error ? <ErrorState message={error} onRetry={refetch} /> : (
+        <DataTable columns={columns} data={data?.results ?? []} loading={loading} onRowClick={(row) => navigate(`/courses/${row.id}`)} page={page} pageSize={pageSize} total={data?.count ?? 0} onPageChange={setPage} emptyMessage="No courses found" />
       )}
     </div>
   )

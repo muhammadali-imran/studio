@@ -10,6 +10,7 @@ import ProgressBar from '../../components/ProgressBar'
 import Badge from '../../components/Badge'
 import Modal, { ModalFooter } from '../../components/Modal'
 import EmptyState from '../../components/EmptyState'
+import ErrorState from '../../components/ErrorState'
 
 const mockStudents = [
   { id: 1, name: 'Ahmed Khan', email: 'ahmed@school.edu', roll: 'CS-2021-001', progress: 82, attendance: 94, grade: 'A' },
@@ -24,16 +25,16 @@ const gradeColor = { 'A+': 'green', A: 'green', 'B+': 'blue', B: 'blue', C: 'amb
 export default function CourseStudentsPage() {
   const { id } = useParams()
   const toast = useToast()
-  const { data, loading } = useApi(`/studio/courses/${id}/students/`)
+  const { data: students, loading, error, refetch } = useApi(`/studio/courses/${id}/students/`, { mockData: mockStudents })
   const { mutate: enroll } = useMutation(`/studio/courses/${id}/enroll/`, 'post')
   const { mutate: unenroll } = useMutation(null, 'delete')
-  const students = data ?? mockStudents
+  const list = students ?? []
 
   const [search, setSearch] = useState('')
   const [enrollModal, setEnrollModal] = useState(false)
   const [userId, setUserId] = useState('')
 
-  const filtered = students.filter((s) =>
+  const filtered = list.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||
     s.email.toLowerCase().includes(search.toLowerCase()) ||
     s.roll?.toLowerCase().includes(search.toLowerCase())
@@ -46,6 +47,7 @@ export default function CourseStudentsPage() {
       toast.success('Student enrolled.')
       setEnrollModal(false)
       setUserId('')
+      refetch()
     } catch { toast.error('Failed to enroll student.') }
   }
 
@@ -53,6 +55,7 @@ export default function CourseStudentsPage() {
     try {
       await unenroll(null, `/studio/courses/${id}/enroll/${studentId}/`)
       toast.success('Student removed.')
+      refetch()
     } catch { toast.error('Failed to remove student.') }
   }
 
@@ -75,7 +78,9 @@ export default function CourseStudentsPage() {
         <SearchInput value={search} onChange={setSearch} placeholder="Search students..." />
       </div>
 
-      {filtered.length === 0 && !loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : filtered.length === 0 && !loading ? (
         <EmptyState icon="👥" title="No students found" message="Enroll students to get started." />
       ) : (
         <div className="space-y-2">

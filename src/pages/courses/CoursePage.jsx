@@ -21,11 +21,12 @@ const mockCourse = {
 
 export default function CoursePage() {
   const { id } = useParams()
-  const { data: course, loading, error } = useApi(`/studio/courses/${id}/`)
-  const c = course || mockCourse
+  const { data: course, loading, error, refetch } = useApi(`/studio/courses/${id}/`, { mockData: mockCourse })
 
   if (loading) return <Loading fullscreen />
-  if (error) return <ErrorState message={error} />
+  if (error) return <ErrorState message={error} onRetry={refetch} />
+  if (!course) return null
+  const c = course
 
   return (
     <div className="space-y-6">

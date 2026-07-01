@@ -7,6 +7,8 @@ import CourseTabs from '../../../components/CourseTabs'
 import Badge from '../../../components/Badge'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import EmptyState from '../../../components/EmptyState'
+import ErrorState from '../../../components/ErrorState'
+import Skeleton from '../../../components/Skeleton'
 
 const mockLectures = [
   { id: 1, title: 'Python Setup & Your First Program', order: 1, published: true, video_url: 'https://youtube.com/watch?v=xyz', duration: '22 min' },
@@ -20,16 +22,17 @@ export default function LectureListPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
-  const { data, loading } = useApi(`/studio/courses/${id}/lectures/`)
+  const { data: lectures, loading, error, refetch } = useApi(`/studio/courses/${id}/lectures/`, { mockData: mockLectures })
   const { mutate: deleteLecture } = useMutation(null, 'delete')
   const [deleteTarget, setDeleteTarget] = useState(null)
 
-  const lectures = data ?? mockLectures
+  const list = lectures ?? []
 
   const handleDelete = async () => {
     try {
       await deleteLecture(null, `/studio/lectures/${deleteTarget}/`)
       toast.success('Lecture deleted.')
+      refetch()
     } catch {
       toast.error('Failed to delete lecture.')
     }
@@ -50,11 +53,15 @@ export default function LectureListPage() {
 
       <CourseTabs />
 
-      {lectures.length === 0 && !loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : loading ? (
+        <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-2xl" />)}</div>
+      ) : list.length === 0 ? (
         <EmptyState icon="🎬" title="No lectures yet" message="Add your first lecture to get started." action={{ label: 'Add lecture', onClick: () => navigate(`/courses/${id}/lectures/new`) }} />
       ) : (
         <div className="space-y-2">
-          {lectures.map((lecture, i) => (
+          {list.map((lecture) => (
             <div key={lecture.id} className="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
               <span className="text-slate-300 text-sm font-mono w-6 text-center select-none">⠿</span>
               <span className="text-sm font-mono text-slate-400 w-6 text-center">{lecture.order}</span>

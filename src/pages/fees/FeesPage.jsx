@@ -7,6 +7,7 @@ import DataTable from '../../components/DataTable'
 import Modal, { ModalFooter } from '../../components/Modal'
 import StatCard from '../../components/StatCard'
 import Card, { CardTitle } from '../../components/Card'
+import ErrorState from '../../components/ErrorState'
 
 const mockStructures = [
   { id: 1, name: 'Spring 2025 — BS Computer Science', amount: 45000, currency: 'PKR', due_date: '2025-02-15', students: 120 },
@@ -25,9 +26,13 @@ const statusVariant = { paid: 'green', pending: 'amber', overdue: 'red' }
 
 export default function FeesPage() {
   const toast = useToast()
-  const { data: paymentsData } = useApi('/studio/fees/payments/')
+  const { data: structures, error: structuresError, refetch: refetchStructures } = useApi('/studio/fees/structures/', { mockData: mockStructures })
+  const { data: paymentsData, loading: paymentsLoading, error: paymentsError, refetch: refetchPayments } = useApi('/studio/fees/payments/', { mockData: mockPayments })
   const { mutate: createStructure, loading: creating } = useMutation('/studio/fees/structures/', 'post')
-  const payments = paymentsData ?? mockPayments
+  const { mutate: markPaid } = useMutation(null, 'post')
+
+  const structureList = structures ?? []
+  const payments = paymentsData ?? []
 
   const [structureModal, setStructureModal] = useState(false)
   const [form, setForm] = useState({ name: '', amount: '', due_date: '' })
@@ -44,7 +49,17 @@ export default function FeesPage() {
       await createStructure(form)
       toast.success('Fee structure created.')
       setStructureModal(false)
+      setForm({ name: '', amount: '', due_date: '' })
+      refetchStructures()
     } catch { toast.error('Failed to create fee structure.') }
+  }
+
+  const handleMarkPaid = async (paymentId) => {
+    try {
+      await markPaid(null, `/studio/fees/payments/${paymentId}/mark-paid/`)
+      toast.success('Payment marked as paid.')
+      refetchPayments()
+    } catch { toast.error('Failed to update payment.') }
   }
 
   const columns = [
@@ -56,7 +71,7 @@ export default function FeesPage() {
     { field: 'status', header: 'Status', render: (r) => <Badge variant={statusVariant[r.status]}>{r.status}</Badge> },
     { field: 'date', header: 'Paid on', render: (r) => r.date || <span className="text-slate-300">—</span> },
     { field: 'actions', header: '', render: (r) => r.status !== 'paid' && (
-      <button className="text-xs px-3 py-1.5 text-violet-600 hover:bg-violet-50 rounded-lg font-medium transition-colors">Mark paid</button>
+      <button onClick={() => handleMarkPaid(r.id)} className="text-xs px-3 py-1.5 text-violet-600 hover:bg-violet-50 rounded-lg font-medium transition-colors">Mark paid</button>
     )},
   ]
 
@@ -81,22 +96,30 @@ export default function FeesPage() {
 
       <Card>
         <CardTitle className="mb-4">Fee structures</CardTitle>
-        <div className="space-y-3">
-          {mockStructures.map((s) => (
-            <div key={s.id} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
-              <div>
-                <p className="font-medium text-slate-800">{s.name}</p>
-                <p className="text-xs text-slate-400 mt-0.5">Due: {s.due_date} · {s.students} students</p>
+        {structuresError ? (
+          <ErrorState message={structuresError} onRetry={refetchStructures} />
+        ) : (
+          <div className="space-y-3">
+            {structureList.map((s) => (
+              <div key={s.id} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div>
+                  <p className="font-medium text-slate-800">{s.name}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Due: {s.due_date} · {s.students} students</p>
+                </div>
+                <p className="text-lg font-bold text-violet-700">{s.currency} {s.amount.toLocaleString()}</p>
               </div>
-              <p className="text-lg font-bold text-violet-700">{s.currency} {s.amount.toLocaleString()}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       <div>
         <h3 className="text-base font-semibold text-slate-800 mb-3">Payment records</h3>
-        <DataTable columns={columns} data={payments} loading={false} emptyMessage="No payments recorded" />
+        {paymentsError ? (
+          <ErrorState message={paymentsError} onRetry={refetchPayments} />
+        ) : (
+          <DataTable columns={columns} data={payments} loading={paymentsLoading} emptyMessage="No payments recorded" />
+        )}
       </div>
 
       <Modal open={structureModal} onClose={() => setStructureModal(false)} title="New fee structure" size="sm">

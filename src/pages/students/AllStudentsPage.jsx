@@ -7,23 +7,28 @@ import DataTable from '../../components/DataTable'
 import Avatar from '../../components/Avatar'
 import Badge from '../../components/Badge'
 import ProgressBar from '../../components/ProgressBar'
+import ErrorState from '../../components/ErrorState'
 
-const mockStudents = [
-  { id: 1, name: 'Ahmed Khan', email: 'ahmed@school.edu', roll: 'CS-2021-001', courses: 4, avg_progress: 75, status: 'active' },
-  { id: 2, name: 'Sara Malik', email: 'sara@school.edu', roll: 'CS-2021-002', courses: 3, avg_progress: 62, status: 'active' },
-  { id: 3, name: 'Bilal Ahmed', email: 'bilal@school.edu', roll: 'CS-2021-003', courses: 4, avg_progress: 45, status: 'active' },
-  { id: 4, name: 'Fatima Noor', email: 'fatima@school.edu', roll: 'CS-2021-004', courses: 5, avg_progress: 90, status: 'active' },
-  { id: 5, name: 'Usman Ali', email: 'usman@school.edu', roll: 'CS-2021-005', courses: 2, avg_progress: 55, status: 'inactive' },
-  { id: 6, name: 'Ayesha Tariq', email: 'ayesha@school.edu', roll: 'CS-2021-006', courses: 4, avg_progress: 80, status: 'active' },
-]
+const mockStudents = {
+  results: [
+    { id: 1, name: 'Ahmed Khan', email: 'ahmed@school.edu', roll: 'CS-2021-001', courses: 4, avg_progress: 75, status: 'active' },
+    { id: 2, name: 'Sara Malik', email: 'sara@school.edu', roll: 'CS-2021-002', courses: 3, avg_progress: 62, status: 'active' },
+    { id: 3, name: 'Bilal Ahmed', email: 'bilal@school.edu', roll: 'CS-2021-003', courses: 4, avg_progress: 45, status: 'active' },
+    { id: 4, name: 'Fatima Noor', email: 'fatima@school.edu', roll: 'CS-2021-004', courses: 5, avg_progress: 90, status: 'active' },
+    { id: 5, name: 'Usman Ali', email: 'usman@school.edu', roll: 'CS-2021-005', courses: 2, avg_progress: 55, status: 'inactive' },
+    { id: 6, name: 'Ayesha Tariq', email: 'ayesha@school.edu', roll: 'CS-2021-006', courses: 4, avg_progress: 80, status: 'active' },
+  ],
+  count: 6,
+}
 
 export default function AllStudentsPage() {
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
   const { page, pageSize, setPage, paginationParams } = usePagination()
-  const { data, loading, error } = useApi('/studio/users/', { params: { ...paginationParams, role: 'student', search: debouncedSearch } })
-  const students = data?.results ?? mockStudents
-  const total = data?.count ?? mockStudents.length
+  const { data, loading, error, refetch } = useApi('/studio/users/', {
+    params: { ...paginationParams, role: 'student', search: debouncedSearch },
+    mockData: mockStudents,
+  })
 
   const columns = [
     { field: 'name', header: 'Student', sortable: true, render: (row) => (
@@ -56,7 +61,11 @@ export default function AllStudentsPage() {
         <SearchInput value={search} onChange={setSearch} placeholder="Search by name or roll..." />
       </div>
 
-      <DataTable columns={columns} data={students} loading={loading} page={page} pageSize={pageSize} total={total} onPageChange={setPage} emptyMessage="No students found" />
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : (
+        <DataTable columns={columns} data={data?.results ?? []} loading={loading} page={page} pageSize={pageSize} total={data?.count ?? 0} onPageChange={setPage} emptyMessage="No students found" />
+      )}
     </div>
   )
 }

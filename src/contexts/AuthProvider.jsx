@@ -1,19 +1,23 @@
 import { useState, useEffect, useCallback } from 'react'
-import api from '../api/axios'
+import api, { TOKEN_KEY, REFRESH_KEY } from '../api/axios'
 import AuthContext from './AuthContext'
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(() => !!localStorage.getItem('studio_access_token'))
+  const [loading, setLoading] = useState(() => !!localStorage.getItem(TOKEN_KEY))
 
   useEffect(() => {
-    const token = localStorage.getItem('studio_access_token')
-    if (!token) return
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) { setLoading(false); return }
+
     api.get('/auth/me/')
       .then((res) => setUser(res.data))
       .catch(() => {
-        localStorage.removeItem('studio_access_token')
-        localStorage.removeItem('studio_refresh_token')
+        // axios interceptor already attempts a refresh; if we land here the
+        // refresh also failed, so fully clear the session.
+        localStorage.removeItem(TOKEN_KEY)
+        localStorage.removeItem(REFRESH_KEY)
+        setUser(null)
       })
       .finally(() => setLoading(false))
   }, [])
@@ -23,15 +27,15 @@ export default function AuthProvider({ children }) {
     if (!['instructor', 'admin'].includes(data.user?.role)) {
       throw new Error('Access denied. Studio is for instructors and administrators only.')
     }
-    localStorage.setItem('studio_access_token', data.access)
-    localStorage.setItem('studio_refresh_token', data.refresh)
+    localStorage.setItem(TOKEN_KEY, data.access)
+    localStorage.setItem(REFRESH_KEY, data.refresh)
     setUser(data.user)
     return data.user
   }, [])
 
   const logout = useCallback(() => {
-    localStorage.removeItem('studio_access_token')
-    localStorage.removeItem('studio_refresh_token')
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(REFRESH_KEY)
     setUser(null)
   }, [])
 

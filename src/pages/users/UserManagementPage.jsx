@@ -10,14 +10,18 @@ import Avatar from '../../components/Avatar'
 import Badge from '../../components/Badge'
 import Modal, { ModalFooter } from '../../components/Modal'
 import ConfirmDialog from '../../components/ConfirmDialog'
+import ErrorState from '../../components/ErrorState'
 
-const mockUsers = [
-  { id: 1, name: 'Dr. Ahmed Hassan', email: 'ahmed.h@school.edu', role: 'instructor', status: 'active', joined: '2023-08-01' },
-  { id: 2, name: 'Prof. Sara Malik', email: 'sara.m@school.edu', role: 'instructor', status: 'active', joined: '2023-08-01' },
-  { id: 3, name: 'Admin User', email: 'admin@school.edu', role: 'admin', status: 'active', joined: '2022-01-01' },
-  { id: 4, name: 'Ahmed Khan', email: 'ahmed@school.edu', role: 'student', status: 'active', joined: '2024-09-01' },
-  { id: 5, name: 'Sara Student', email: 'sara@school.edu', role: 'student', status: 'inactive', joined: '2024-09-01' },
-]
+const mockUsers = {
+  results: [
+    { id: 1, name: 'Dr. Ahmed Hassan', email: 'ahmed.h@school.edu', role: 'instructor', status: 'active', joined: '2023-08-01' },
+    { id: 2, name: 'Prof. Sara Malik', email: 'sara.m@school.edu', role: 'instructor', status: 'active', joined: '2023-08-01' },
+    { id: 3, name: 'Admin User', email: 'admin@school.edu', role: 'admin', status: 'active', joined: '2022-01-01' },
+    { id: 4, name: 'Ahmed Khan', email: 'ahmed@school.edu', role: 'student', status: 'active', joined: '2024-09-01' },
+    { id: 5, name: 'Sara Student', email: 'sara@school.edu', role: 'student', status: 'inactive', joined: '2024-09-01' },
+  ],
+  count: 5,
+}
 
 const roleVariant = { admin: 'violet', instructor: 'indigo', student: 'blue' }
 
@@ -27,12 +31,15 @@ export default function UserManagementPage() {
   const [roleFilter, setRoleFilter] = useState('')
   const debouncedSearch = useDebounce(search, 300)
   const { page, pageSize, setPage, paginationParams } = usePagination()
-  const { data, loading } = useApi('/studio/users/', { params: { ...paginationParams, search: debouncedSearch, role: roleFilter } })
+  const { data, loading, error, refetch } = useApi('/studio/users/', {
+    params: { ...paginationParams, search: debouncedSearch, role: roleFilter },
+    mockData: mockUsers,
+  })
   const { mutate: createUser, loading: creating } = useMutation('/studio/users/', 'post')
   const { mutate: deleteUser } = useMutation(null, 'delete')
 
-  const users = data?.results ?? mockUsers
-  const total = data?.count ?? mockUsers.length
+  const users = data?.results ?? []
+  const total = data?.count ?? 0
 
   const [createModal, setCreateModal] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -45,6 +52,7 @@ export default function UserManagementPage() {
       toast.success('User created successfully.')
       setCreateModal(false)
       setNewUser({ name: '', email: '', role: 'student', password: '' })
+      refetch()
     } catch { toast.error('Failed to create user.') }
   }
 
@@ -52,6 +60,7 @@ export default function UserManagementPage() {
     try {
       await deleteUser(null, `/studio/users/${deleteTarget}/`)
       toast.success('User deactivated.')
+      refetch()
     } catch { toast.error('Failed to deactivate user.') }
     setDeleteTarget(null)
   }
@@ -103,7 +112,11 @@ export default function UserManagementPage() {
         </select>
       </div>
 
-      <DataTable columns={columns} data={users} loading={loading} page={page} pageSize={pageSize} total={total} onPageChange={setPage} emptyMessage="No users found" />
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : (
+        <DataTable columns={columns} data={users} loading={loading} page={page} pageSize={pageSize} total={total} onPageChange={setPage} emptyMessage="No users found" />
+      )}
 
       {/* Create user modal */}
       <Modal open={createModal} onClose={() => setCreateModal(false)} title="Create user" size="sm">

@@ -7,6 +7,8 @@ import CourseTabs from '../../../components/CourseTabs'
 import Badge from '../../../components/Badge'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import EmptyState from '../../../components/EmptyState'
+import ErrorState from '../../../components/ErrorState'
+import Skeleton from '../../../components/Skeleton'
 
 const mockQuizzes = [
   { id: 1, title: 'Week 1 — Python Basics', questions: 10, time_limit: 20, passing_score: 60, published: true, attempts: 42 },
@@ -18,13 +20,13 @@ export default function QuizListPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
-  const { data } = useApi(`/studio/courses/${id}/quizzes/`)
+  const { data: quizzes, loading, error, refetch } = useApi(`/studio/courses/${id}/quizzes/`, { mockData: mockQuizzes })
   const { mutate: deleteQuiz } = useMutation(null, 'delete')
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const quizzes = data ?? mockQuizzes
+  const list = quizzes ?? []
 
   const handleDelete = async () => {
-    try { await deleteQuiz(null, `/studio/quizzes/${deleteTarget}/`); toast.success('Quiz deleted.') }
+    try { await deleteQuiz(null, `/studio/quizzes/${deleteTarget}/`); toast.success('Quiz deleted.'); refetch() }
     catch { toast.error('Failed to delete.') }
     setDeleteTarget(null)
   }
@@ -41,11 +43,15 @@ export default function QuizListPage() {
 
       <CourseTabs />
 
-      {quizzes.length === 0 ? (
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : loading ? (
+        <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-2xl" />)}</div>
+      ) : list.length === 0 ? (
         <EmptyState icon="❓" title="No quizzes yet" message="Build your first quiz to assess students." action={{ label: 'Create quiz', onClick: () => navigate(`/courses/${id}/quizzes/new`) }} />
       ) : (
         <div className="space-y-3">
-          {quizzes.map((quiz) => (
+          {list.map((quiz) => (
             <div key={quiz.id} className="bg-white border border-slate-100 rounded-2xl px-5 py-4 shadow-sm flex items-center gap-4">
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-slate-800">{quiz.title}</p>

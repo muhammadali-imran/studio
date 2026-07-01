@@ -31,7 +31,7 @@ function Sidebar() {
   return (
     <>
       <div className={`fixed inset-0 bg-black/40 z-20 lg:hidden transition-opacity duration-200 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
-      <aside className={`fixed top-0 left-0 h-full z-30 flex flex-col bg-[#1e1040] text-white transition-all duration-300 ease-in-out ${open ? 'w-64' : 'w-0 lg:w-16 overflow-hidden'}`}>
+      <aside id="studio-sidebar" className={`fixed top-0 left-0 h-full z-30 flex flex-col bg-[#1e1040] text-white transition-all duration-300 ease-in-out ${open ? 'w-64' : 'w-0 lg:w-16 overflow-hidden'}`}>
         {/* Logo */}
         <div className={`flex items-center gap-3 px-4 py-5 border-b border-white/10 min-h-16 ${!open && 'lg:justify-center lg:px-0'}`}>
           <span className="text-2xl">🎓</span>
@@ -116,7 +116,13 @@ function TopBar() {
   return (
     <header className="sticky top-0 z-20 bg-white border-b border-slate-100 shadow-sm px-4 lg:px-6 h-16 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <button onClick={toggle} aria-label="Toggle sidebar" className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+        <button
+          onClick={toggle}
+          aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}
+          aria-expanded={open}
+          aria-controls="studio-sidebar"
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 rounded-lg"
+        >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {open
               ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

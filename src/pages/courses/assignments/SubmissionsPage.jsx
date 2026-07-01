@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useApi } from '../../../hooks/useApi'
 import Badge from '../../../components/Badge'
 import DataTable from '../../../components/DataTable'
+import ErrorState from '../../../components/ErrorState'
 
 const mockSubmissions = [
   { id: 1, student_name: 'Ahmed Khan', student_email: 'ahmed@school.edu', submitted_at: '2025-03-08 14:22', late: false, grade: 18, graded: true, file: 'lab3_ahmed.pdf' },
@@ -13,11 +14,11 @@ const mockSubmissions = [
 
 export default function SubmissionsPage() {
   const { id, aid } = useParams()
-  const { data, loading } = useApi(`/studio/assignments/${aid}/submissions/`)
-  const submissions = data ?? mockSubmissions
+  const { data: submissions, loading, error, refetch } = useApi(`/studio/assignments/${aid}/submissions/`, { mockData: mockSubmissions })
+  const list = submissions ?? []
 
-  const graded = submissions.filter((s) => s.graded).length
-  const pending = submissions.filter((s) => s.submitted_at && !s.graded).length
+  const graded = list.filter((s) => s.graded).length
+  const pending = list.filter((s) => s.submitted_at && !s.graded).length
 
   const columns = [
     { field: 'student_name', header: 'Student', sortable: true, render: (row) => (
@@ -56,7 +57,7 @@ export default function SubmissionsPage() {
 
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Total submissions', value: submissions.filter((s) => s.submitted_at).length, color: 'text-slate-800' },
+          { label: 'Total submissions', value: list.filter((s) => s.submitted_at).length, color: 'text-slate-800' },
           { label: 'Graded', value: graded, color: 'text-emerald-600' },
           { label: 'Pending grading', value: pending, color: pending > 0 ? 'text-amber-600' : 'text-slate-800' },
         ].map(({ label, value, color }) => (
@@ -67,7 +68,11 @@ export default function SubmissionsPage() {
         ))}
       </div>
 
-      <DataTable columns={columns} data={submissions} loading={loading} emptyMessage="No submissions yet" />
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : (
+        <DataTable columns={columns} data={list} loading={loading} emptyMessage="No submissions yet" />
+      )}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApi } from '../../hooks/useApi'
+import { useFileUpload } from '../../hooks/useFileUpload'
 import { useMutation } from '../../hooks/useMutation'
 import { useToast } from '../../components/NotificationContext'
 import SearchInput from '../../components/SearchInput'
@@ -8,6 +9,7 @@ import FileUpload from '../../components/FileUpload'
 import Modal, { ModalFooter } from '../../components/Modal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import EmptyState from '../../components/EmptyState'
+import ErrorState from '../../components/ErrorState'
 
 const mockResources = [
   { id: 1, name: 'Python Reference Guide.pdf', type: 'pdf', size: '2.1 MB', visibility: 'students', course: 'Python', uploaded: '2025-01-10' },
@@ -28,25 +30,29 @@ export default function LibraryPage() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [visibility, setVisibility] = useState('students')
 
-  const { data } = useApi('/studio/library/')
-  const { mutate: upload, loading: uploading } = useMutation('/studio/library/upload/', 'post')
+  const { data: resources, loading, error, refetch } = useApi('/studio/library/', { mockData: mockResources })
+  const { upload, uploading, progress } = useFileUpload('/studio/library/upload/')
   const { mutate: del } = useMutation(null, 'delete')
 
-  const resources = data ?? mockResources
-  const filtered = resources.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()))
+  const list = resources ?? []
+  const filtered = list.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()))
 
   const handleUpload = async () => {
     if (!selectedFile) { toast.error('Please select a file.'); return }
     try {
-      await upload({ file: selectedFile.name, visibility })
+      // Real multipart/form-data upload with progress, not just metadata.
+      await upload(selectedFile, { visibility })
       toast.success('Resource uploaded.')
       setUploadModal(false)
       setSelectedFile(null)
-    } catch { toast.error('Upload failed.') }
+      refetch()
+    } catch {
+      toast.error('Upload failed. Please try again.')
+    }
   }
 
   const handleDelete = async () => {
-    try { await del(null, `/studio/library/${deleteTarget}/`); toast.success('Resource deleted.') }
+    try { await del(null, `/studio/library/${deleteTarget}/`); toast.success('Resource deleted.'); refetch() }
     catch { toast.error('Failed to delete.') }
     setDeleteTarget(null)
   }
@@ -67,7 +73,9 @@ export default function LibraryPage() {
         <SearchInput value={search} onChange={setSearch} placeholder="Search resources..." />
       </div>
 
-      {filtered.length === 0 ? (
+      {error ? (
+        <ErrorState message={error} onRetry={refetch} />
+      ) : filtered.length === 0 && !loading ? (
         <EmptyState icon="🗂️" title="No resources found" message="Upload your first resource to get started."
           action={{ label: 'Upload', onClick: () => setUploadModal(true) }} />
       ) : (
@@ -83,7 +91,7 @@ export default function LibraryPage() {
               </div>
               <Badge variant={visibilityVariant[res.visibility] || 'slate'}>{res.visibility}</Badge>
               <div className="flex gap-2">
-                <a href="#" className="text-xs px-3 py-1.5 text-violet-600 hover:bg-violet-50 rounded-lg font-medium transition-colors">Download</a>
+                <a href={res.url || '#'} className="text-xs px-3 py-1.5 text-violet-600 hover:bg-violet-50 rounded-lg font-medium transition-colors">Download</a>
                 <button onClick={() => setDeleteTarget(res.id)} className="text-xs px-3 py-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
               </div>
             </div>
@@ -91,13 +99,13 @@ export default function LibraryPage() {
         </div>
       )}
 
-      <Modal open={uploadModal} onClose={() => setUploadModal(false)} title="Upload resource">
+      <Modal open={uploadModal} onClose={() => !uploading && setUploadModal(false)} title="Upload resource">
         <div className="space-y-4">
-          <FileUpload label="Select file to upload" accept=".pdf,.doc,.docx,.pptx,.xlsx,.zip" maxSizeMB={50} onFileSelect={setSelectedFile} />
-          {selectedFile && <p className="text-sm text-emerald-600">✓ {selectedFile.name}</p>}
+          <FileUpload label="Select file to upload" accept=".pdf,.doc,.docx,.pptx,.xlsx,.zip" maxSizeMB={50} onFileSelect={setSelectedFile} progress={uploading ? progress : null} />
+          {selectedFile && !uploading && <p className="text-sm text-emerald-600">✓ {selectedFile.name}</p>}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Visibility</label>
-            <select value={visibility} onChange={(e) => setVisibility(e.target.value)} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-violet-400">
+            <select value={visibility} onChange={(e) => setVisibility(e.target.value)} disabled={uploading} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-violet-400 disabled:opacity-60">
               <option value="students">Students only</option>
               <option value="instructors">Instructors only</option>
               <option value="public">Public</option>
@@ -105,9 +113,9 @@ export default function LibraryPage() {
           </div>
         </div>
         <ModalFooter>
-          <button onClick={() => setUploadModal(false)} className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
+          <button onClick={() => setUploadModal(false)} disabled={uploading} className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 disabled:opacity-60">Cancel</button>
           <button onClick={handleUpload} disabled={uploading} className="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-xl hover:bg-violet-700 disabled:opacity-60">
-            {uploading ? 'Uploading…' : 'Upload'}
+            {uploading ? `Uploading… ${progress}%` : 'Upload'}
           </button>
         </ModalFooter>
       </Modal>
