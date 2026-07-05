@@ -1,9 +1,9 @@
 import { Outlet } from 'react-router-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import useSidebar from '@/hooks/useSidebar'
-import useAuth from '@/hooks/useAuth'
-import Avatar from '@/components/Avatar'
+import useSidebar from '@shared/hooks/useSidebar'
+import useAuth from '@shared/hooks/useAuth'
+import Avatar from '@shared/components/ui/Avatar'
 
 const navItems = [
   { to: '/dashboard',      label: 'Dashboard',      icon: '🏠' },

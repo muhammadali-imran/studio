@@ -1,0 +1,5 @@
+export { default as CourseListPage } from './pages/CourseListPage'
+export { default as CoursePage } from './pages/CoursePage'
+export { default as CreateCoursePage } from './pages/CreateCoursePage'
+export { default as EditCoursePage } from './pages/EditCoursePage'
+export { default as CourseStudentsPage } from './pages/CourseStudentsPage'

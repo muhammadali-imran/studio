@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import useAuth from '@/hooks/useAuth'
+import useAuth from '@shared/hooks/useAuth'
 import Loading from '@shared/components/ui/Loading'
 
 export default function ProtectedRoute({ children, roles }) {
