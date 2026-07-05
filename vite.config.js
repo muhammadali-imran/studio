@@ -7,7 +7,13 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  plugins: [
+    tailwindcss(), 
+    react()
+  ],
+  server: {
+    port: 5174,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

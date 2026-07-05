@@ -98,7 +98,7 @@ export default function CourseStudentsPage() {
                 <p className="text-xs text-slate-400 mb-1">Progress</p>
                 <ProgressBar value={student.progress} showValue color="violet" />
               </div>
-              <div className="hidden md:block text-center min-w-[60px]">
+              <div className="hidden md:block text-center min-w-15">
                 <p className="text-sm font-semibold text-slate-800">{student.attendance}%</p>
                 <p className="text-xs text-slate-400">Attendance</p>
               </div>

@@ -118,7 +118,7 @@ export default function ReportsPage() {
             <div className="flex-1">
               <PieChartWidget data={report.submission_status} />
             </div>
-            <div className="space-y-3 min-w-[120px]">
+            <div className="space-y-3 min-w-30">
               {report.submission_status.map(({ name, value }, i) => {
                 const colors = ['bg-violet-500', 'bg-amber-500', 'bg-red-500']
                 return (
