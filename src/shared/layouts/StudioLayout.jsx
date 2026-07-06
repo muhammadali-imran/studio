@@ -31,13 +31,17 @@ function Sidebar() {
   return (
     <>
       <div className={`fixed inset-0 bg-black/40 z-20 lg:hidden transition-opacity duration-200 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
-      <aside id="studio-sidebar" className={`fixed top-0 left-0 h-full z-30 flex flex-col bg-[#1e1040] text-white transition-all duration-300 ease-in-out ${open ? 'w-64' : 'w-0 lg:w-16 overflow-hidden'}`}>
+      <aside
+        id="studio-sidebar"
+        className={`fixed top-0 left-0 h-full z-30 flex flex-col transition-all duration-300 ease-in-out ${open ? 'w-64' : 'w-0 lg:w-16 overflow-hidden'}`}
+        style={{ background: 'linear-gradient(180deg, #064e3b 0%, #065f46 60%, #047857 100%)' }}
+      >
         {/* Logo */}
         <div className={`flex items-center gap-3 px-4 py-5 border-b border-white/10 min-h-16 ${!open && 'lg:justify-center lg:px-0'}`}>
           <span className="text-2xl">🎓</span>
           {open && (
             <div>
-              <span className="font-bold text-lg tracking-tight">Studio</span>
+              <span className="font-bold text-lg tracking-tight text-white">Studio</span>
               <p className="text-[10px] text-white/40 uppercase tracking-widest -mt-0.5">Educator Dashboard</p>
             </div>
           )}
@@ -49,7 +53,7 @@ function Sidebar() {
             <NavLink key={to} to={to} title={label}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2.5 mx-2 my-0.5 rounded-xl text-sm font-medium transition-colors
-                ${isActive ? 'bg-violet-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}
+                ${isActive ? 'bg-emerald-500 text-white shadow-md shadow-emerald-900/30' : 'text-white/60 hover:text-white hover:bg-white/10'}
                 ${!open && 'lg:justify-center lg:px-0 lg:mx-1'}`
               }>
               <span className="text-lg leading-none">{icon}</span>
@@ -65,7 +69,7 @@ function Sidebar() {
                 <NavLink key={to} to={to} title={label}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2.5 mx-2 my-0.5 rounded-xl text-sm font-medium transition-colors
-                    ${isActive ? 'bg-violet-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}
+                    ${isActive ? 'bg-emerald-500 text-white shadow-md shadow-emerald-900/30' : 'text-white/60 hover:text-white hover:bg-white/10'}
                     ${!open && 'lg:justify-center lg:px-0 lg:mx-1'}`
                   }>
                   <span className="text-lg leading-none">{icon}</span>
@@ -82,7 +86,7 @@ function Sidebar() {
             <NavLink key={to} to={to} title={label}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2.5 mx-2 my-0.5 rounded-xl text-sm font-medium transition-colors
-                ${isActive ? 'bg-violet-600 text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}
+                ${isActive ? 'bg-emerald-500 text-white shadow-md shadow-emerald-900/30' : 'text-white/60 hover:text-white hover:bg-white/10'}
                 ${!open && 'lg:justify-center lg:px-0 lg:mx-1'}`
               }>
               <span className="text-lg leading-none">{icon}</span>
@@ -91,10 +95,10 @@ function Sidebar() {
           ))}
 
           {open && user && (
-            <div className="flex items-center gap-3 px-4 py-3 mx-2 mt-2 rounded-xl bg-white/10">
+            <div className="flex items-center gap-3 px-4 py-3 mx-2 mt-2 rounded-xl bg-white/10 border border-white/10">
               <Avatar name={user.name || user.email} size="sm" />
               <div className="min-w-0">
-                <p className="text-sm font-medium truncate">{user.name || 'Instructor'}</p>
+                <p className="text-sm font-medium truncate text-white">{user.name || 'Instructor'}</p>
                 <p className="text-xs text-white/50 truncate capitalize">{user.role}</p>
               </div>
             </div>
@@ -121,7 +125,7 @@ function TopBar() {
           aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}
           aria-expanded={open}
           aria-controls="studio-sidebar"
-          className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-400 rounded-lg"
+          className="p-2 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-lg"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {open
@@ -131,14 +135,14 @@ function TopBar() {
           </svg>
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-base font-bold text-violet-700">Studio</span>
-          <span className="hidden sm:inline text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full capitalize">{user?.role}</span>
+          <span className="text-base font-bold text-emerald-700">Studio</span>
+          <span className="hidden sm:inline text-xs text-slate-400 bg-emerald-50 px-2 py-0.5 rounded-full capitalize">{user?.role}</span>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <div className="relative">
-          <button onClick={() => setMenuOpen((v) => !v)} className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
+          <button onClick={() => setMenuOpen((v) => !v)} className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-emerald-50 transition-colors">
             <Avatar name={user?.name || user?.email} size="sm" />
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -152,7 +156,7 @@ function TopBar() {
                   <p className="text-sm font-medium text-slate-800 truncate">{user?.name || 'Instructor'}</p>
                   <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                 </div>
-                <button onClick={() => { navigate('/settings'); setMenuOpen(false) }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">Settings</button>
+                <button onClick={() => { navigate('/settings'); setMenuOpen(false) }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-emerald-50 transition-colors">Settings</button>
                 <div className="border-t border-slate-100" />
                 <button onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
               </div>
